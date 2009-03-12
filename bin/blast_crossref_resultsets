@@ -1,5 +1,8 @@
 #! /usr/bin/ruby
 #
+#  By Pjotr Prins (c) 2009
+#  See the biotools LICENSE file
+#  
 #  List the results of a BLAST XML file (-m7) by hits. The BLAST file is post-
 #  processed to find all hits with their original searches. All results are
 #  parsed and each sequence that is hit is listed with the original search
@@ -17,10 +20,11 @@
 #  having to BLAST all hits again to find their homologues.
 #
 #  Usage:
-#
-#
 
 require 'bio'
+
+crossref = {}
+program = version = db = nil
 
 for fn in ARGV do 
   if !File.exist? fn
@@ -29,8 +33,6 @@ for fn in ARGV do
   end
   $stderr.print "\nParsing #{fn}..."
 
-  crossref = {}
-  program = version = db = nil
   Bio::Blast.reports(File.new(fn)).each do |rep| # for multiple xml reports
     program = rep.program
     version = rep.version
@@ -45,17 +47,18 @@ for fn in ARGV do
       end
     end
   end
-  print program,"\n"
-  print version,"\n"
-  print db,"\n"
-  crossref.sort.each do | k, set |
-    print '"',k,'",'
-    set.each do | item |
-      # print '"',item.split[0],'",'
-      print '"',item,'",'
-    end
-    print "\n"
+end
+
+print program,"\n"
+print version,"\n"
+print db,"\n"
+crossref.sort.each do | k, set |
+  print '"',k,'",'
+  set.each do | item |
+    # print '"',item.split[0],'",'
+    print '"',item,'",'
   end
+  print "\n"
 end
 
 
