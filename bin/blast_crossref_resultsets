@@ -19,6 +19,9 @@
 #  This can be useful when BLASTing datasets against themselves. Rather then
 #  having to BLAST all hits again to find their homologues.
 #
+#  If the XML file is large it may be worth splitting it with the
+#  blast_split_xml script (BioRuby loads the full DOM into RAM).
+#
 #  Usage:
 #
 #     blast_crossref_resultsets xmlfile(s) > by_hit.csv
