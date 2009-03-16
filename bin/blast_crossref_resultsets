@@ -20,6 +20,8 @@
 #  having to BLAST all hits again to find their homologues.
 #
 #  Usage:
+#
+#     blast_crossref_resultsets xmlfile(s) > by_hit.csv
 
 require 'bio'
 
@@ -38,13 +40,17 @@ for fn in ARGV do
     version = rep.version
     db = rep.db
     rep.iterations.each do |itr|
-      search_id = itr.query_def
-      itr.hits.each do |hit|
-        # print hit.target_id, "\t", hit.evalue, "\n" if hit.evalue < 0.001
-        id = hit.target_id
-        crossref[id] = [] if crossref[id] == nil
-        crossref[id].push search_id
-      end
+      if itr.hits.size > 0
+        # combine query id and definition to a single string
+        search_id = itr.query_id+'|'+itr.query_def
+        itr.hits.each do |hit|
+          # combine each hit id and defintion to a single string
+          id = hit.hit_id+'|'+hit.definition
+          crossref[id] = [] if crossref[id] == nil
+          # store the query id against the hit id
+          crossref[id].push search_id
+        end
+		  end
     end
   end
 end
@@ -53,9 +59,10 @@ print program,"\n"
 print version,"\n"
 print db,"\n"
 crossref.sort.each do | k, set |
+  # p set.size
+  # next if set.size == 1      # skip singletons
   print '"',k,'",'
   set.each do | item |
-    # print '"',item.split[0],'",'
     print '"',item,'",'
   end
   print "\n"
