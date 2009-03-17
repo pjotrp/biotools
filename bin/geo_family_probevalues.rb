@@ -1,12 +1,13 @@
 #! /usr/bin/ruby
 #
 #  This script parses a GEO project MINiML (MIAME Notation in Markup Language)
-#  family file and turns the array data into a single matrix file containing
-#  a probe descriptor and the raw probe values, as described on
+#  family file and fetches the raw probe values for each array and writes these
+#  to simple array files containing just the probe name and value. Information
+#  on MINiML can be found here:
 #
 #      http://www.ncbi.nlm.nih.gov/projects/geo/info/MINiML.html
 #
-#  For example, download an unpack a family file from GEO (both experiments and
+#  For example, download and unpack a family file from GEO (both experiments and
 #  platforms are possible), like:
 #
 #      GPL3718_family.xml.tgz
@@ -20,7 +21,10 @@
 #
 #  And run this tool:
 #
-#      geo_family2table.rb GPL3718_family.xml > GPL3718_family.csv
+#      geo_family_probevalues.rb GPL3718_family.xml
+#
+#  creates for each array a two column file containing probe name (ID_REF)
+#  and value (VALUE).
 #
 #  (you will need Bioruby with microarray support and xmlsimple)
 #
@@ -28,7 +32,8 @@
 #  sets) some heuristic is used. Also when values are missing they will 
 #  be written as 'NA' (which often happens with controls).
 #
-#  Note: all values are loaded in memory before writing the matrix.
+#  Note: this tool is memory efficient as it writes out new files on
+#  the fly.
 #
 #  By Pjotr Prins (c) 2009
 #
@@ -39,33 +44,7 @@ require 'optparse'
 require 'ostruct'
 require 'bio'
 
-# A simple support class for handling rownames.
-
-class RowNames
-
-  def initialize
-    @list = {}
-  end
-
-  def add name
-    if not @list[name]
-     @list[name] = @list.size
-    end
-  end
-
-  def index name
-    @list[name]
-  end
-
-  def each
-    @list.each do | k, v |
-      yield v,k
-    end
-  end
-
-end
-
-$stderr.print "geo_family2table.rb by Pjotr Prins (c) 2009\n"
+$stderr.print "geo_family_probevalues.rb by Pjotr Prins (c) 2009\n"
 
 options = OpenStruct.new()
 opts = OptionParser.new() { |opts|
@@ -75,9 +54,9 @@ opts = OptionParser.new() { |opts|
 
 Examples:
 
-    geo_family2table.rb GPL3718_family.xml > GPL3718_family.csv
+    geo_family_probevalues.rb GPL3718_family.xml
 
-    geo_family2table.rb GSE10940_family.xml > GSE10940_family.csv
+    geo_family_probevalues.rb GSE10940_family.xml 
 
 EXAMPLE
     exit()
@@ -99,11 +78,15 @@ ARGV.each do | fn |
   m = Bio::Microarray::MINiML::GEO_Family.new(fn)
   isTwoColor = m.platform.two_color?
 
+  # Create array of probe names
+  probenames = []
+  m.platform.each_probe do | probe |
+    raise 'Probename not defined at line #{probenames.size}' if probe['ID']==nil or probe['ID']==''
+    probenames.push probe['ID']
+    # print probe['ID']
+  end
+
   num = m.samples
-  arrays = []
-  colnames = []
-  rownames = RowNames.new
-  i=0
   m.each_sample do | sample |
     i += 1
     field_names = sample.field_names
@@ -146,24 +129,7 @@ ARGV.each do | fn |
     end
   end
 
-  nas = 0
-  $stderr.print "Writing table..." if options.verbose
-  arrays.each_with_index do | array, i |
-    print "\t",colnames[i] if array.size > 1
-  end
-  rownames.each do | index, rowname |
-    print "\n",rowname
-    arrays.each do | array |
-      if array.size > 1
-        if array[index] == nil
-          print "\tNA"
-          nas += 1
-        else
-          print "\t",array[index]
-        end
-      end
-    end
-  end
+  # $stderr.print "Writing table..." if options.verbose
   $stderr.print "Warning: #{nas} NA's written to table!" if nas>0
 end
 
