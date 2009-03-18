@@ -76,60 +76,37 @@ opts.parse!(ARGV)
 
 ARGV.each do | fn |
   m = Bio::Microarray::MINiML::GEO_Family.new(fn)
-  isTwoColor = m.platform.two_color?
+  raise 'Two-color not supported (yet)' if m.platform.two_color?
 
   # Create array of probe names
-  probenames = []
-  m.platform.each_probe do | probe |
-    raise 'Probename not defined at line #{probenames.size}' if probe['ID']==nil or probe['ID']==''
-    probenames.push probe['ID']
-    # print probe['ID']
-  end
-
+  probenames = m.platform.ids
   num = m.samples
-  m.each_sample do | sample |
-    i += 1
-    field_names = sample.field_names
-    $stderr.print "#{(i*100.0/num).to_i}%\tReading #{sample.acc}, size #{sample.rows}, #{sample.title}\n" if options.verbose
-    $stderr.print field_names.join(':'),"\n"
-    next if sample.rows == 0
-    array = []
-    # Make rowname
-    rn = sample.title.strip
-    if rn and rn != ''
-      rn = rn.gsub(/\t/,' ')
-      rn = rn.gsub(/&/,'&amp;')
-      rn = rn.gsub(/\</,'&lt;')
-      rn = rn.gsub(/\>/,'&gt;')
-      rn = rn.gsub(/\"/,'&quote;')
-      rn = rn.gsub(/\'/,'&apos;')
-    end
+  $stderr.print "Number of probes is #{probenames.size} over #{num} samples\n"
 
-    if not isTwoColor
-      if not field_names.include?('ID_REF') and not field_names.include?('VALUE')
-        p field_names
-        raise 'Problem with field names - missing value!'
-      end
-      columns = ['ID_REF']
-      if field_names.include?('RAW_SIGNAL')
-        columns.push 'RAW_SIGNAL'
-      else
-        columns.push 'VALUE'
-      end
-      $stderr.print 'Reading: ',columns.join(':'),"\n"
-      colnames.push "#{sample.acc}:: #{rn}"
-      sample.each_row(:columns => columns) do | data |
-        rowname = data[0]
-        rownames.add(rowname)
-        array[rownames.index(rowname)] = data[1]
-      end
-      arrays.push array
-    else
-      raise 'Two color arrays not supported'
+  m.each_sample do | sample |
+    field_names = sample.field_names
+    $stderr.print 'Contains: ',field_names.join(':'),"\n"
+    next if sample.rows == 0
+    # load values in a hash to locate missing values
+    values = {}
+    field_id = sample.field_id
+    field_raw = sample.field_raw
+    sample.each_row(:columns => [field_id,field_raw]) do | data |
+      values[data[0]] = data[1]
     end
+    nas = 0
+    File.open(sample.external_data_filename+'.csv','w') do | f |
+      probenames.each do | id |
+        value = values[id]
+        if value == nil or value == ''
+          value = 'NA'
+          nas += 1
+        end
+        f.print id,"\t",value,"\n"
+      end
+    end
+    $stderr.print "Warning: #{nas} NA's written to table!\n" if nas>0
   end
 
-  # $stderr.print "Writing table..." if options.verbose
-  $stderr.print "Warning: #{nas} NA's written to table!" if nas>0
 end
 
