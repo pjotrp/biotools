@@ -21,10 +21,10 @@
 #
 #  And run this tool:
 #
-#      geo_family_probevalues.rb GPL3718_family.xml
+#      geo_family_probevalues.rb GPL3718_family.xml --fields [field list]
 #
 #  creates for each array a two column file containing probe name (ID_REF)
-#  and value (VALUE).
+#  and value (VALUE) - where VALUE is the value as defined by --fields.
 #
 #  (you will need Bioruby with microarray support and xmlsimple)
 #
@@ -44,19 +44,26 @@ require 'optparse'
 require 'ostruct'
 require 'bio'
 
-$stderr.print "geo_family_probevalues.rb by Pjotr Prins (c) 2009\n"
+$stderr.print "geo_family_probevalues.rb by Pjotr Prins (c) 2009\n\n"
 
 options = OpenStruct.new()
 opts = OptionParser.new() { |opts|
+  # List of fields
+  opts.on("--fields x,y", Array, "list of field names (default VALUE)") do |fields|
+    options.fields = fields
+  end
+
   opts.on_tail("-h", "--help", "Print this message") {
     print(opts)
     print <<EXAMPLE
+
+
 
 Examples:
 
     geo_family_probevalues.rb GPL3718_family.xml
 
-    geo_family_probevalues.rb GSE10940_family.xml 
+    geo_family_probevalues.rb GSE10940_family.xml --fields=VALUE3
 
 EXAMPLE
     exit()
@@ -90,7 +97,7 @@ ARGV.each do | fn |
     # load values in a hash to locate missing values
     values = {}
     field_id = sample.field_id
-    field_raw = sample.field_raw
+    field_raw = sample.field_raw(options.fields)
     sample.each_row(:columns => [field_id,field_raw]) do | data |
       values[data[0]] = data[1]
     end
