@@ -3,6 +3,10 @@
 #  By Pjotr Prins and Erin Bakker (c) Lab. of Nematology, Wageningen University 2009
 #  See the biotools LICENSE file
 #  
+#  A more elaborate version of ./bin/blast_crossref_resultsets, which splits up
+#  results based on identifiers, sorts on p-value and takes account of BAC
+#  position
+#
 #  List the results of a BLAST XML file (-m7) by hits. The BLAST file is post-
 #  processed to find all hits with their original searches. All results are
 #  parsed and each sequence that is hit is listed with the original search
@@ -25,16 +29,21 @@
 #
 #  Usage:
 #
-#     blast_crossref_resultsets xmlfile(s) > by_hit.csv
+#     blast_crossref_resultsets --split id1,id2 xmlfile(s) > by_hit.csv
 #
-#  A more elaborate version which splits up results based on identifiers,
-#  sorts on p-value and takes account of BAC position can be found in 
-#  ./bin/extra/blast_crossref_resultsets_split
 
 require 'bio'
 
 crossref = {}
 program = version = db = nil
+
+if ARGV[0] == '--split'
+  ARGV.shift
+	splitters = ARGV[0].split(/,/)
+	ARGV.shift
+end
+
+$stderr.print "Splitting on #{splitters.join(',')}" if splitters
 
 for fn in ARGV do 
   if !File.exist? fn
