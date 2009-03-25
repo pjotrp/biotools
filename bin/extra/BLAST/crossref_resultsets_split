@@ -29,7 +29,7 @@
 #
 #  A more elaborate version which splits up results based on identifiers,
 #  sorts on p-value and takes account of BAC position can be found in 
-#  ./bin/extra/BLAST/crossref_resultsets_split.rb
+#  ./bin/extra/blast_crossref_resultsets_split
 
 require 'bio'
 
