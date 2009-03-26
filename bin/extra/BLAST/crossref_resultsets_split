@@ -3,9 +3,9 @@
 #  By Pjotr Prins and Erin Bakker (c) Lab. of Nematology, Wageningen University 2009
 #  See the biotools LICENSE file
 #  
-#  A more elaborate version of ./bin/blast_crossref_resultsets, which splits up
-#  results based on identifiers, sorts on p-value and takes account of BAC
-#  position
+#  A more elaborate version of the generic ./bin/blast_crossref_resultsets. This
+#  version splits up results based on identifiers, sorts on p-value and takes
+#  account of BAC position.
 #
 #  List the results of a BLAST XML file (-m7) by hits. The BLAST file is post-
 #  processed to find all hits with their original searches. All results are
@@ -37,13 +37,52 @@ require 'bio'
 crossref = {}
 program = version = db = nil
 
-if ARGV[0] == '--split'
+if ARGV[0] == '--split' or ARGV[0] == '-s'
   ARGV.shift
-	splitters = ARGV[0].split(/,/)
-	ARGV.shift
+  splitters = ARGV[0].split(/,/)
+  ARGV.shift
 end
 
 $stderr.print "Splitting on #{splitters.join(',')}" if splitters
+
+# Store the information 'efficiently'
+class HitInfo
+  attr_reader :search_id, :evalue, :from, :to
+  def initialize search_id, from, to, evalue
+    @search_id = search_id.strip
+    @evalue = evalue
+    @from = from
+    @to   = to
+  end
+
+  # The +id+ divides the search results according to criteria on the BAC (original
+  # sequence). By adding the group name hit location a unique id is created.
+  def id hit, splitters
+    # combine each hit id and defintion to a single string
+    my_id = hit.hit_id+'|'+hit.definition
+    if splitters
+      # Group the located values according to a textual identifier
+      # and add the identifier to the indexer
+      splitters.each do | group |
+        if @search_id =~ /#{group}/i
+          my_id = my_id + '|' + group
+        end
+      end
+    end
+    my_id
+  end
+
+  def pretty
+    search_id+" (#{from}-#{to}; E=#{evalue})"
+  end
+
+  def <=> item
+    @evalue <=> item.evalue
+  end
+end
+
+class HitInfoList < Array
+end
 
 for fn in ARGV do 
   if !File.exist? fn
@@ -61,13 +100,14 @@ for fn in ARGV do
         # combine query id and definition to a single string
         search_id = itr.query_id+'|'+itr.query_def
         itr.hits.each do |hit|
-          # combine each hit id and defintion to a single string
-          id = hit.hit_id+'|'+hit.definition
+          # add the hit to the crossref_id or BAC_id
+          hitinfo = HitInfo.new(search_id, hit.evalue, hit.target_start, hit.target_end)
+          id = hitinfo.id(hit,splitters)
           crossref[id] = [] if crossref[id] == nil
           # store the query id against the hit id
-          crossref[id].push search_id
+          crossref[id].push hitinfo
         end
-		  end
+      end
     end
   end
 end
@@ -75,12 +115,13 @@ end
 print program,"\n"
 print version,"\n"
 print db,"\n"
+# Print each crossref_id or BAC_id with matching hits by location
 crossref.sort.each do | k, set |
   # p set.size
   # next if set.size == 1      # skip singletons
   print '"',k,'",'
-  set.each do | item |
-    print '"',item,'",'
+  set.sort.each do | item |
+    print '"',item.pretty,'",'
   end
   print "\n"
 end
