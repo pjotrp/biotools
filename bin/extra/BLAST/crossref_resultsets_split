@@ -34,7 +34,6 @@
 
 require 'bio'
 
-crossref = {}
 program = version = db = nil
 
 if ARGV[0] == '--split' or ARGV[0] == '-s'
@@ -48,7 +47,7 @@ $stderr.print "Splitting on #{splitters.join(',')}" if splitters
 # Store the information 'efficiently'
 class HitInfo
   attr_reader :search_id, :evalue, :from, :to
-  def initialize search_id, from, to, evalue
+  def initialize search_id, evalue, from, to
     @search_id = search_id.strip
     @evalue = evalue
     @from = from
@@ -77,13 +76,78 @@ class HitInfo
   end
 
   def <=> item
-    @evalue <=> item.evalue
+    evalue <=> item.evalue
   end
 end
 
 class HitInfoList < Array
 end
 
+class Bin 
+  attr_reader :items
+
+	def initialize
+		@items = []
+	end
+
+  def add item
+	  @start = item.from if @start==nil
+		@start = [item.from,@start].min
+	  @stop = item.to if @stop==nil
+		@stop  = [item.to,@stop].max
+		@items.push item
+	end
+
+	# check if item it is a fit in this bin
+  def isfit? item
+	  # both are inside
+	  return true if item.from >= @start and item.to <= @stop
+		# both are outside
+		return true if item.from < @start and item.to > @stop
+		# either one is inside
+		return true if item.from > @start and item.from < @stop
+		return true if item.to > @start and item.to < @stop
+		false
+	end
+
+	def pretty
+		"|#{@start}:#{@stop}"
+	end
+end
+
+class CrossRefMap < Hash
+
+	# Yield the list split by size
+	def each_by_size
+	  keys.sort.each do | k |
+		  list = self[k]
+			bins = []
+      for item in list
+				# fits existing bin?
+				fit = false
+				for bin in bins
+				  if bin.isfit?(item)
+					  bin.add(item)
+						fit = true
+					end
+				end
+        if not fit
+				  bin = Bin.new
+					bin.add(item)
+					bins.push bin
+				end
+			end
+			for bins in bins
+				yield k+bin.pretty, bin.items
+			end
+		end
+		# each do | ref, list |
+		#   yield ref,list
+		# end
+  end
+end
+
+crossref = CrossRefMap.new
 for fn in ARGV do 
   if !File.exist? fn
     print "\nFile #{fn} does not exist"
@@ -101,7 +165,7 @@ for fn in ARGV do
         search_id = itr.query_id+'|'+itr.query_def
         itr.hits.each do |hit|
           # add the hit to the crossref_id or BAC_id
-          hitinfo = HitInfo.new(search_id, hit.evalue, hit.target_start, hit.target_end)
+          hitinfo = HitInfo.new(search_id, hit.evalue, hit.query_start, hit.query_end)
           id = hitinfo.id(hit,splitters)
           crossref[id] = [] if crossref[id] == nil
           # store the query id against the hit id
@@ -116,7 +180,7 @@ print program,"\n"
 print version,"\n"
 print db,"\n"
 # Print each crossref_id or BAC_id with matching hits by location
-crossref.sort.each do | k, set |
+crossref.each_by_size do | k, set |
   # p set.size
   # next if set.size == 1      # skip singletons
   print '"',k,'",'
