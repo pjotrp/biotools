@@ -10,7 +10,6 @@ PROG_VERSION='0.01 (January 2010)'
 
 require 'optparse'
 require 'ostruct'
-require 'bigbio'
 
 usage = <<USAGE
 
@@ -47,7 +46,7 @@ opts = OptionParser.new do |opts|
     
 Examples:
 
-    simulate_codons --temp 20 --range 50..65 aa.fasta
+    simulate_codons --temp 20 --range 50..65 --freq test/data/sequence/codon/codon_frequency.txt test/data/fasta/aa.fa
     
 EXAMPLE
     exit()
@@ -62,7 +61,7 @@ EXAMPLE
 end
 opts.parse!(ARGV)
 
-p $options
+require 'bigbio'
 
 raise 'Missing frequency file' if $options.freq_fn == nil
 raise 'Missing input file name' if ARGV.size != 1
