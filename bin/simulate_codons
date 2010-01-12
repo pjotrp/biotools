@@ -1,0 +1,81 @@
+#! /usr/bin/ruby
+#
+#  Script for simulating codon configurations for an input 
+#  amino acid sequence
+#
+#  Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
+#
+
+PROG_VERSION='0.01 (January 2010)'
+
+require 'optparse'
+require 'ostruct'
+require 'bigbio'
+
+usage = <<USAGE
+
+  simulate_codons #{PROG_VERSION} 
+
+    Simulate codon configurations for an input amino acid 
+    sequence.
+
+    Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
+        
+  usage:
+
+    simulate_codons [--temp t] [--range min..max] [--iter 1000] --freq freqfile aafile
+
+  Use --help for more information
+
+USAGE
+
+print(usage) if ARGV.size == 0
+
+$options = OpenStruct.new()
+
+$options.warning_level = 0
+$options.iterations = 1000
+$options.temperature = 20
+$options.range = nil   
+$options.freq_fn = nil
+
+opts = OptionParser.new do |opts|
+  opts.on_tail("-h", "--help", "Print this message") {
+    print(usage)
+    print(opts)
+    print <<EXAMPLE
+    
+Examples:
+
+    simulate_codons --temp 20 --range 50..65 aa.fasta
+    
+EXAMPLE
+    exit()
+  }
+
+  opts.on("--temp", Integer, "Ambient temperature (default 37)") do | t |
+    $options.temperature = t
+  end
+  opts.on '-f', '--freq=fn', 'Codon frequencies' do | fn |
+    $options.freq_fn = fn
+  end
+end
+opts.parse!(ARGV)
+
+p $options
+
+raise 'Missing frequency file' if $options.freq_fn == nil
+raise 'Missing input file name' if ARGV.size != 1
+fn = ARGV[0]
+
+# Open the input file and fetch the first sequence
+print "Reading #{fn}\n"
+aas = FastaReader.new(fn, :index=>true)
+
+rec = aas.get_by_index(0)
+print "Description: ",rec.descr,"\n"
+print "Sequence:    ",rec.seq,"\n"
+
+
+
+
