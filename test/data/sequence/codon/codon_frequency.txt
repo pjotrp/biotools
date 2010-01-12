@@ -1,0 +1,21 @@
+"AA"	"Codon A"	"% used"	"Codon B"	"used"	"Codon C"	"used"	"Codon D"	"used"	"Codon E"	"used"	"Codon F"	"% used"
+"F"	"TTT"	57.38	"TTC"	42.62								
+"L"	"TTA"	13.39	"TTG"	25.42	"CTT"	26.05	"CTC"	13.08	"CTA"	9.62	"CTG"	12.45
+"I"	"ATT"	50.66	"ATC"	26.38	"ATA"	22.96						
+"M"	"ATG"	100.00										
+"V"	"GTT"	41.96	"GTC"	17.04	"GTA"	15.92	"GTG"	25.08				
+"S"	"TCT"	27.56	"TCC"	12.86	"TCA"	21.26	"TCG"	6.92	"AGT"	18.17	"AGC"	13.23
+"P"	"CCT"	38.89	"CCC"	13.17	"CCA"	34.57	"CCG"	13.37				
+"T"	"ACT"	36.17	"ACC"	21.00	"ACA"	31.60	"ACG"	11.23				
+"A"	"GCT"	43.80	"GCC"	16.62	"GCA"	31.00	"GCG"	8.58				
+"Y"	"TAT"	55.24	"TAC"	44.76								
+"H"	"CAT"	61.14	"CAC"	38.86								
+"Q"	"CAA"	51.57	"CAG"	48.43								
+"N"	"AAT"	63.26	"AAC"	36.74								
+"K"	"AAA"	43.28	"AAG"	56.72								
+"D"	"GAT"	70.13	"GAC"	29.87								
+"E"	"GAA"	51.57	"GAG"	48.43								
+"C"	"TGT"	56.10	"TGC"	43.90								
+"W"	"TGG"	100.00										
+"R"	"CGT"	14.86	"CGC "	8.11	"CGA"	11.20	"CGG"	10.23	"AGA"	30.50	"AGG"	25.10
+"G"	"GGT"	35.06	"GGC"	16.45	"GGA"	32.47	"GGG"	16.02				
