@@ -8,6 +8,10 @@
 
 PROG_VERSION='0.01 (January 2010)'
 
+srcpath=File.dirname(File.dirname(__FILE__))
+libpath=File.dirname(srcpath)+'/lib/ruby/biotools'
+$: << libpath
+
 require 'optparse'
 require 'ostruct'
 
@@ -34,7 +38,6 @@ $options = OpenStruct.new()
 
 $options.warning_level = 0
 $options.iterations = 1000
-$options.temperature = 20
 $options.range = nil   
 $options.freq_fn = nil
 
@@ -46,22 +49,26 @@ opts = OptionParser.new do |opts|
     
 Examples:
 
-    simulate_codons --temp 20 --range 50..65 --freq test/data/sequence/codon/codon_frequency.txt test/data/fasta/aa.fa
+    simulate_codons [OPTIONS] --freq test/data/sequence/codon/codon_frequency.txt test/data/fasta/aa.fa
     
 EXAMPLE
     exit()
   }
 
-  opts.on("--temp", Integer, "Ambient temperature (default 37)") do | t |
-    $options.temperature = t
+  opts.on("--iter", Integer, "Iterations (default 1000)") do | i |
+    $options.iterations = i
   end
-  opts.on '-f', '--freq=fn', 'Codon frequencies' do | fn |
+  opts.on '-f', '--freq=fn', 'Codon frequency table' do | fn |
     $options.freq_fn = fn
+  end
+  opts.on '-o', '--out=fn', 'Output file name' do | fn |
+    $options.out_fn = fn
   end
 end
 opts.parse!(ARGV)
 
 require 'bigbio'
+require 'codon_freq'
 
 raise 'Missing frequency file' if $options.freq_fn == nil
 raise 'Missing input file name' if ARGV.size != 1
@@ -71,10 +78,18 @@ fn = ARGV[0]
 print "Reading #{fn}\n"
 aas = FastaReader.new(fn, :index=>true)
 
+# Name output file
+if $options.out_fn == nil
+  $options.out_fn = File.basename($options.freq_fn)+'_'+File.basename(fn)
+end
+
 rec = aas.get_by_index(0)
 print "Description: ",rec.descr,"\n"
 print "Sequence:    ",rec.seq,"\n"
+print "Output file: ",$options.out_fn
 
+freq = CodonFreq.new($options.freq_fn)
+freq.pretty_print
 
 
 
