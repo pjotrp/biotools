@@ -69,6 +69,7 @@ opts.parse!(ARGV)
 
 require 'bigbio'
 require 'codon_freq'
+require 'simulate_codons'
 
 raise 'Missing frequency file' if $options.freq_fn == nil
 raise 'Missing input file name' if ARGV.size != 1
@@ -91,5 +92,6 @@ print "Output file: ",$options.out_fn
 freq = CodonFreq.new($options.freq_fn)
 freq.pretty_print
 
-
+sim = SimulateCodons.new(rec.seq, freq)
+sim.simulate($options.out_fn, rec.descr, $options.iterations, true)
 
