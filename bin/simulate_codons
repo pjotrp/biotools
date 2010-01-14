@@ -38,6 +38,7 @@ $options = OpenStruct.new()
 
 $options.warning_level = 0
 $options.iterations = 1000
+$options.seed = 9999
 $options.range = nil   
 $options.freq_fn = nil
 
@@ -55,8 +56,11 @@ EXAMPLE
     exit()
   }
 
-  opts.on("--iter", Integer, "Iterations (default 1000)") do | i |
+  opts.on("--iter=num", Integer, "Iterations (default 1000)") do | i |
     $options.iterations = i
+  end
+  opts.on("--seed", Integer, "Seed randomizer (default 9999)") do | i |
+    $options.seed = i
   end
   opts.on '-f', '--freq=fn', 'Codon frequency table' do | fn |
     $options.freq_fn = fn
@@ -69,10 +73,14 @@ opts.parse!(ARGV)
 
 require 'bigbio'
 require 'codon_freq'
+require 'selectors'
 require 'simulate_codons'
 
 raise 'Missing frequency file' if $options.freq_fn == nil
-raise 'Missing input file name' if ARGV.size != 1
+if ARGV.size != 1
+  p ARGV
+  raise 'Missing input file name' 
+end
 fn = ARGV[0]
 
 # Open the input file and fetch the first sequence
@@ -85,13 +93,16 @@ if $options.out_fn == nil
 end
 
 rec = aas.get_by_index(0)
-print "Description: ",rec.descr,"\n"
-print "Sequence:    ",rec.seq,"\n"
-print "Output file: ",$options.out_fn
+print "Description:     ",rec.descr,"\n"
+print "Output file:     ",$options.out_fn,"\n"
+print "Seed randomizer: ",$options.seed,"\n"
+print "Sequence:        ",rec.seq,"\n"
+
+srand($options.seed)
 
 freq = CodonFreq.new($options.freq_fn)
 freq.pretty_print
 
-sim = SimulateCodons.new(rec.seq, freq)
+sim = SimulateCodons.new(rec.seq, SimpleRandomCodon.new(rec.seq, freq))
 sim.simulate($options.out_fn, rec.descr, $options.iterations, true)
 

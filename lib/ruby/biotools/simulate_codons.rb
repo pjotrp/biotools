@@ -5,13 +5,31 @@
 
 class SimulateCodons
 
-  def initialize aaseq, freq_table
+  def initialize aaseq, selector
     @aaseq = aaseq
-    @freq  = freq_table
+    @selector = selector
   end
 
   def simulate fn, descr='SimulateCodons', iterations=1000, validate=false
-    
+    File.open(fn,"w") do | f |
+      (0..iterations).each do | iter |
+        show_progress(iter)
+
+        nuc = ''
+        @aaseq.each_char do | aa |
+          codon = @selector.get_codon(aa)
+          nuc += codon
+        end
+        f.write(">"+descr+" (simulated codons)\n")
+        f.write(nuc+"\n")
+      end
+    end
+  end
+
+  private
+
+  def show_progress iter
+    $stderr.print "." if iter % 100 == 0
   end
 end
 
