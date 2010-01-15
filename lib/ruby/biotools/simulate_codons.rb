@@ -20,7 +20,7 @@ class SimulateCodons
           codon = @selector.get_codon(aa)
           nuc += codon
         end
-        f.write(">"+descr+" (simulated codons)\n")
+        f.write(">"+descr+" (simulated codons ##{iter+1})\n")
         f.write(nuc+"\n")
       end
     end

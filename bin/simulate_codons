@@ -6,7 +6,7 @@
 #  Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
 #
 
-PROG_VERSION='0.01 (January 2010)'
+PROG_VERSION='simulate_codons 0.01 (January 2010)'
 
 srcpath=File.dirname(File.dirname(__FILE__))
 libpath=File.dirname(srcpath)+'/lib/ruby/biotools'
@@ -15,9 +15,9 @@ $: << libpath
 require 'optparse'
 require 'ostruct'
 
-usage = <<USAGE
+print "#{PROG_VERSION}\n"
 
-  simulate_codons #{PROG_VERSION} 
+usage = <<USAGE
 
     Simulate codon configurations for an input amino acid 
     sequence.
@@ -89,7 +89,7 @@ aas = FastaReader.new(fn, :index=>true)
 
 # Name output file
 if $options.out_fn == nil
-  $options.out_fn = File.basename($options.freq_fn)+'_'+File.basename(fn)
+  $options.out_fn = File.basename($options.freq_fn,'.cut')+'_'+File.basename(fn,'.fa')+"_s#{$options.seed}_i#{$options.iterations}.fa"
 end
 
 rec = aas.get_by_index(0)
