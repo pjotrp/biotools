@@ -49,15 +49,18 @@ Examples:
 EXAMPLE
     exit()
   }
-
   opts.on '--seq=fn', 'Sequence information (UTR in FASTA)' do | fn |
     $options.seqinfo_fn = fn
+  end
+  opts.on '--temp=list', Array, "List of ambient temperatures" do | list |
+    $options.templist = list
   end
 end
 opts.parse!(ARGV)
 
 require 'bigbio'
 require 'utr'
+require 'rnastats'
 
 raise 'Missing sequence file' if $options.seqinfo_fn == nil
 if ARGV.size != 1
@@ -75,3 +78,11 @@ info = FastaReader.new($options.seqinfo_fn)
 utr3 = UTR.new(info,'3')
 utr5 = UTR.new(info,'5')
 
+RNAStats.new(nil,nil,nil,$options.templist).print_title
+
+mrnas.each do | mrna |
+  stats = RNAStats.new(mrna,utr5,utr3,$options.templist)
+  stats.pretty_print
+end
+
+print "\nCopyright (C) 2010 Pjotr Prins and Lotte Westerhof\n"
