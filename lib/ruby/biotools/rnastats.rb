@@ -6,6 +6,9 @@ class RNAStats
 
   include RNAfold
 
+
+  CODONS = %w{ GCA GCC GCG GCT TGC TGT GAC GAT GAA GAG TTC TTT GGA GGC GGG GGT CAC CAT ATA ATC ATT AAA AAG CTA CTC CTG CTT TTA TTG ATG AAC AAT CCA CCC CCG CCT CAA CAG AGA AGG CGA CGC CGG CGT AGC AGT TCA TCC TCG TCT ACA ACC ACG ACT GTA GTC GTG GTT TGG TAC TAT TAA TAG TGA }
+
   def initialize seq=nil, utr5=nil, utr3=nil, templist=nil
     if seq
       @seq = seq.seq
@@ -18,6 +21,8 @@ class RNAStats
     end
     @templist = templist
     @templist = ["37"] if templist == nil
+
+    @codontable = Bio::CodonTable[1]
   end
 
   def print_title
@@ -29,6 +34,9 @@ class RNAStats
       print "\tdE"
     end
     print "\t%A\t%T\t%G\t%C\t%GC\tGC1\tGC2\tGC3"
+    CODONS.each do | codon |
+      print "\t#{codon}"
+    end
     print "\n"
   end
 
@@ -51,6 +59,24 @@ class RNAStats
     print "\t",gc(0)
     print "\t",gc(1)
     print "\t",gc(2)
+    
+    usage = @bioseq.codon_usage
+    # size = @bioseq.size
+    CODONS.each do | codon |
+      codon = codon.downcase
+      if usage[codon] != nil and usage[codon] > 0.0
+        aa = @codontable[codon]
+        family = @codontable.revtrans(aa) # => ["gcg", "gct", "gca", "gcc"]
+        total = 0
+        family.each do | c2 |
+          total += usage[c2]
+        end
+        # print "\t",usage[codon],"/#{total}-",
+        print "\t",(usage[codon].to_f/total*100+0.00001).to_i
+      else
+        print "\t-"
+      end
+    end
     print "\n"
   end
 
