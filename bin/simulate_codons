@@ -89,7 +89,7 @@ aas = FastaReader.new(fn, :index=>true)
 
 # Name output file
 if $options.out_fn == nil
-  $options.out_fn = File.basename($options.freq_fn,'.cut')+'_'+File.basename(fn,'.fa')+"_s#{$options.seed}_i#{$options.iterations}.fa"
+  $options.out_fn = File.basename(fn,'.fa')+'_'+File.basename($options.freq_fn,'.cut')+"_s#{$options.seed}_i#{$options.iterations}.fa"
 end
 
 rec = aas.get_by_index(0)

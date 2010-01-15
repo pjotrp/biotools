@@ -12,7 +12,7 @@ class SimulateCodons
 
   def simulate fn, descr='SimulateCodons', iterations=1000, validate=false
     File.open(fn,"w") do | f |
-      (0..iterations).each do | iter |
+      (0..iterations-1).each do | iter |
         show_progress(iter)
 
         nuc = ''

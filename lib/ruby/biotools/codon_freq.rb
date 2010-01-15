@@ -1,4 +1,15 @@
-# Codon frequencies
+# Codon frequencies 
+#
+# This class reads an EMBOSS cut file, which contain
+#
+#   GCC    A     0.159    10.375 287181
+#
+# though it has a relaxed heuristic for lines that have three fields:
+#
+#   GCC  A       16
+#
+# note the frequency can be a percentage 0-100, or between 0.0..1.0.
+# All other lines are ignored.
 #
 # Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
 #
@@ -8,11 +19,21 @@ class CodonFreq < Array
   def initialize fn
     print "\nFrequency file: #{fn}\n"
     File.new(fn).each_line do | s |
+      # some heuristic for recognizing fields
       s = s.strip
       next if s =~ /^\#/ or s.size == 0
       fields = s.split
-      list = { :codon => fields[0], :aminoacid => fields[1], :freq => fields[2].to_f*100  }
-      push list
+      next if fields.size != 3 and fields.size != 5
+      next if fields[0].size != 3
+      next if fields[1].size != 1
+      list = { :codon => fields[0], :aminoacid => fields[1] }
+      freq = fields[2].to_f
+      if freq>0.0 and freq<1.0
+        freq = freq*100
+      end
+      raise "Frequency out of range #{fields[2]}, <#{s}>" if freq<0.0 or freq>100.0
+      list = { :codon => fields[0], :aminoacid => fields[1], :freq => freq  }
+      push list if freq != 0.0
     end
     # ascertain all frequencies add up to 100
     validate
