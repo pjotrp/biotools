@@ -30,3 +30,5 @@ pkg
 doc/examples/c/affy
 biolib-*
 *.tmp
+output/
+run_*.sh

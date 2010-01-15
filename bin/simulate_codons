@@ -1,0 +1,105 @@
+#! /usr/bin/ruby
+#
+#  Script for simulating codon configurations for an input 
+#  amino acid sequence
+#
+#  Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
+#
+
+PROG_VERSION='simulate_codons 0.01 (January 2010)'
+
+srcpath=File.dirname(File.dirname(__FILE__))
+libpath=File.dirname(srcpath)+'/lib/ruby/biotools'
+$: << libpath
+
+require 'optparse'
+require 'ostruct'
+
+print "#{PROG_VERSION}\n"
+
+usage = <<USAGE
+
+    Simulate codon configurations for an input amino acid 
+    sequence.
+
+    Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
+        
+
+    Use --help for more information
+
+USAGE
+
+print(usage) if ARGV.size == 0
+
+$options = OpenStruct.new()
+
+$options.warning_level = 0
+$options.iterations = 1000
+$options.seed = 9999
+$options.range = nil   
+$options.freq_fn = nil
+
+opts = OptionParser.new do |opts|
+  opts.on_tail("-h", "--help", "Print this message") {
+    print(usage)
+    print(opts)
+    print <<EXAMPLE
+    
+Examples:
+
+    simulate_codons [OPTIONS] --freq test/data/sequence/codon/codon_frequency.txt test/data/fasta/aa.fa
+    
+EXAMPLE
+    exit()
+  }
+
+  opts.on("--iter=num", Integer, "Iterations (default 1000)") do | i |
+    $options.iterations = i
+  end
+  opts.on("--seed", Integer, "Seed randomizer (default 9999)") do | i |
+    $options.seed = i
+  end
+  opts.on '-f', '--freq=fn', 'Codon frequency table' do | fn |
+    $options.freq_fn = fn
+  end
+  opts.on '-o', '--out=fn', 'Output file name' do | fn |
+    $options.out_fn = fn
+  end
+end
+opts.parse!(ARGV)
+
+require 'bigbio'
+require 'codon_freq'
+require 'selectors'
+require 'simulate_codons'
+
+raise 'Missing frequency file' if $options.freq_fn == nil
+if ARGV.size != 1
+  p ARGV
+  raise 'Missing input file name' 
+end
+fn = ARGV[0]
+
+# Open the input file and fetch the first sequence
+print "Reading #{fn}\n"
+aas = FastaReader.new(fn, :index=>true)
+
+# Name output file
+if $options.out_fn == nil
+  $options.out_fn = File.basename(fn,'.fa')+'_'+File.basename($options.freq_fn,'.cut')+"_s#{$options.seed}_i#{$options.iterations}.fa"
+end
+
+rec = aas.get_by_index(0)
+print "Description:     ",rec.descr,"\n"
+print "Output file:     ",$options.out_fn,"\n"
+print "Seed randomizer: ",$options.seed,"\n"
+print "Sequence:        ",rec.seq,"\n"
+
+srand($options.seed)
+
+freq = CodonFreq.new($options.freq_fn)
+freq.pretty_print
+
+sim = SimulateCodons.new(rec.seq, SimpleRandomCodon.new(rec.seq, freq))
+sim.simulate($options.out_fn, rec.descr, $options.iterations, true)
+

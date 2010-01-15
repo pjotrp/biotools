@@ -1,0 +1,88 @@
+#! /usr/bin/ruby
+#
+#  Get statistics on mRNA
+#
+#  Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
+#
+
+PROG_VERSION='mrna_stats 0.01 (January 2010)'
+
+srcpath=File.dirname(File.dirname(__FILE__))
+libpath=File.dirname(srcpath)+'/lib/ruby/biotools'
+$: << libpath
+
+require 'optparse'
+require 'ostruct'
+
+print "#{PROG_VERSION}\n"
+
+usage = <<USAGE
+
+    Get mRNA statistics - nucleotide content, codon use
+    and RNAfold energy levels
+
+    Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
+        
+  usage:
+
+    Use --help for more information
+
+USAGE
+
+print(usage) if ARGV.size == 0
+
+$options = OpenStruct.new()
+
+$options.warning_level = 0
+$options.seqinfo_fn = nil
+
+opts = OptionParser.new do |opts|
+  opts.on_tail("-h", "--help", "Print this message") {
+    print(usage)
+    print(opts)
+    print <<EXAMPLE
+    
+Examples:
+
+    mrna_stats [OPTIONS] --seq test/data/fasta/IL-4.fa mrna.fa
+    
+EXAMPLE
+    exit()
+  }
+  opts.on '--seq=fn', 'Sequence information (UTR in FASTA)' do | fn |
+    $options.seqinfo_fn = fn
+  end
+  opts.on '--temp=list', Array, "List of ambient temperatures" do | list |
+    $options.templist = list
+  end
+end
+opts.parse!(ARGV)
+
+require 'bigbio'
+require 'utr'
+require 'rnastats'
+
+raise 'Missing sequence file' if $options.seqinfo_fn == nil
+if ARGV.size != 1
+  p ARGV
+  raise 'Missing input file name' 
+end
+fn = ARGV[0]
+
+print "Reading #{fn}\n"
+mrnas = FastaReader.new(fn, :index=>true, :regex => '\#(\d+)')
+
+print "Reading #{$options.seqinfo_fn}\n"
+info = FastaReader.new($options.seqinfo_fn)
+
+utr3 = UTR.new(info,'3')
+utr5 = UTR.new(info,'5')
+
+RNAStats.new(nil,nil,nil,$options.templist).print_title
+
+mrnas.each do | mrna |
+  stats = RNAStats.new(mrna,utr5,utr3,$options.templist)
+  stats.pretty_print
+end
+
+print "\nCopyright (C) 2010 Pjotr Prins and Lotte Westerhof\n"
