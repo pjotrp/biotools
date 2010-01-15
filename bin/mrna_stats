@@ -57,4 +57,21 @@ end
 opts.parse!(ARGV)
 
 require 'bigbio'
+require 'utr'
+
+raise 'Missing sequence file' if $options.seqinfo_fn == nil
+if ARGV.size != 1
+  p ARGV
+  raise 'Missing input file name' 
+end
+fn = ARGV[0]
+
+print "Reading #{fn}\n"
+mrnas = FastaReader.new(fn, :index=>true, :regex => '\#(\d+)')
+
+print "Reading #{$options.seqinfo_fn}\n"
+info = FastaReader.new($options.seqinfo_fn)
+
+utr3 = UTR.new(info,'3')
+utr5 = UTR.new(info,'5')
 
