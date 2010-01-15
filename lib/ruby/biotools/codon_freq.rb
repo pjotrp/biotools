@@ -17,6 +17,7 @@
 class CodonFreq < Array
 
   def initialize fn
+    is_perc = nil
     print "\nFrequency file: #{fn}\n"
     File.new(fn).each_line do | s |
       # some heuristic for recognizing fields
@@ -29,8 +30,15 @@ class CodonFreq < Array
       list = { :codon => fields[0], :aminoacid => fields[1] }
       freq = fields[2].to_f
       if freq>0.0 and freq<1.0
+        is_perc = false if is_perc == nil
+        raise "Frequencies inconsistent, <#{s}>" if is_perc == true
         freq = freq*100
+      else
+        is_perc = true if is_perc == nil
+        raise "Frequencies inconsistent, <#{s}>" if is_perc == false
       end
+      freq = 100.0 if freq == 1.0 and is_perc
+
       raise "Frequency out of range #{fields[2]}, <#{s}>" if freq<0.0 or freq>100.0
       list = { :codon => fields[0], :aminoacid => fields[1], :freq => freq  }
       push list if freq != 0.0
