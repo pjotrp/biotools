@@ -6,7 +6,13 @@ class RNAStats
   include RNAfold
 
   def initialize seq=nil, utr5=nil, utr3=nil, templist=nil
-    @seq = seq
+    if seq
+      @seq = seq.seq
+      @id = seq.id
+      if seq and utr5 and utr3
+        @seq = utr5.sequence.seq+@seq+utr3.sequence.seq
+      end
+    end
     @templist = templist
     @templist = ["37"] if templist == nil
   end
@@ -23,10 +29,10 @@ class RNAStats
   end
 
   def pretty_print
-    print @seq.id
+    print @id
     e = []
     @templist.each do | t |
-      e1 = energy(@seq.seq,t)
+      e1 = energy(@seq,t)
       print "\t",e1
       e.push e1
     end
