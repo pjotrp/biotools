@@ -1,4 +1,5 @@
 *.out
+*.csv
 .hg
 .hgignore
 tags
@@ -32,3 +33,4 @@ biolib-*
 *.tmp
 output/
 run_*.sh
+IL*.fa
