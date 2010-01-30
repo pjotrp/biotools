@@ -5,7 +5,7 @@
 #  Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
 #
 
-PROG_VERSION='mrna_stats 0.01 (January 2010)'
+PROG_VERSION='mrna_stats 0.02 (January 2010)'
 
 srcpath=File.dirname(File.dirname(__FILE__))
 libpath=File.dirname(srcpath)+'/lib/ruby/biotools'
