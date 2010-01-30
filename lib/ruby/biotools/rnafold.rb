@@ -5,11 +5,24 @@ module RNAfold
 
   RNAFOLD_BINARY = '/opt/ViennaRNA-1.8.4/bin/RNAfold'
 
-  def calc_energy seq, temp
+  def fold_info seq, temp
     cmd = "echo #{seq} |"+RNAFOLD_BINARY+" -T #{temp} -noPS"
     result = `#{cmd}` 
-    result.strip =~ /\((-?\d+\.\d+\))$/
+    result
+  end
+
+  def fold_seq buf
+    buf.split[1]
+  end
+
+  def fold_energy buf
+    buf.strip =~ /\((-?\d+\.\d+\))$/
     $1.to_f
+  end
+
+  def calc_energy seq, temp
+    result = fold_info(seq, temp)
+    fold_energy(result)
   end
 
 end

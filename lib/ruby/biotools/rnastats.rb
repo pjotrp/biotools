@@ -3,21 +3,48 @@
 require 'rnafold'
 require 'bio'
 
-# Calculate and record fold statistics
+# Calculate and record fold statistics. 
+#
+# The size of the fold is calculated by removing all loops containing only dots 
+# (nucleotides) - so remove anything between single braces: (....). Next all 
+# braces are removed. So:
+#
+#   sequence              remove main loops
+#   ...(((...)))...    -> ...(())... -> ......   (length is 6)
+#   ...(..((...).))... -> ...(())... -> ......   (length is also 6)
+#
+# To count the total loops simply the left braces are counted.
+#
 class RNAfolds < Array
   include RNAfold
 
   def initialize seq, templist
-    # energy of full RNAfold
-    e = []
     templist.each do | t |
-      e1 = calc_energy(seq,t)
-      print "\t",e1
-      e.push e1
-      rec = { :temp => t, :energy => e1 }
+      result = fold_info(seq,t)
+      e1 = fold_energy(result)
+      # p result
+      short = result.gsub(/\(\.+\)/,'').gsub(/[\(\)]/,'')
+      # p [short,short.size]
+      rec = { :temp => t, :energy => e1, :fold => fold_seq(result), :size => short.size, :loops => result.count("(") }
+      # p rec
       push rec
+      # @maxtemp = t if @maxtemp==nil or @maxtemp<t
     end
-    if e.size == 2
+  end
+
+  def pretty_print
+    each do | fold |
+      print "\t",fold[:size]
+    end
+    each do | fold |
+      print "\t",fold[:loops]
+    end
+    e = []
+    each do | fold |
+      print "\t",fold[:energy]
+      e.push fold[:energy]
+    end
+    if e.size > 1
       print "\t",e[1]-e[0]
     end
   end
@@ -59,6 +86,9 @@ class RNAStats
       print "\tlen@",t,"C"
     end
     @templist.each do | t |
+      print "\tloops@",t,"C"
+    end
+    @templist.each do | t |
       print "\tE@",t,"C"
     end
     if @templist.size == 2
@@ -78,6 +108,7 @@ class RNAStats
     print @id
     print "\t",@seq.size
     rnafolds = RNAfolds.new(@seq, @templist)
+    rnafolds.pretty_print
 
     # energy of subsections (take the max for now)
     temperature = @templist.max
