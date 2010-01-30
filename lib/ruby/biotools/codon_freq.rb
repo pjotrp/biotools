@@ -1,6 +1,9 @@
 # Codon frequencies 
 #
-# This class reads an EMBOSS cut file, which contain
+# This class reads an EMBOSS cut file, which contains CONDONS, 
+# amino acid, the percentage within amino acid, the total 
+# frequency (I suppose) and the total number of occurrances in
+# the genome:
 #
 #   GCC    A     0.159    10.375 287181
 #
@@ -10,6 +13,9 @@
 #
 # note the frequency can be a percentage 0-100, or between 0.0..1.0.
 # All other lines are ignored.
+#
+# The CodonFreq is a list (Array) of mapped items, containing :codon,
+# :aminoacid and :freq (0..100)
 #
 # Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
 #

@@ -1,3 +1,5 @@
+# Module runs external Vienna RNAfold binary and fetches energy
+# and sequence information
 
 module RNAfold
 

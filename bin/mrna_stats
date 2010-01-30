@@ -44,7 +44,7 @@ opts = OptionParser.new do |opts|
     
 Examples:
 
-    mrna_stats [OPTIONS] --seq test/data/fasta/IL-4.fa mrna.fa
+    mrna_stats [OPTIONS] --seq=test/data/fasta/IL-4.fa IL-4_Hs-1.freq_s9999_i10.fa 
     
 EXAMPLE
     exit()

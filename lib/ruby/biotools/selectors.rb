@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
 #
-# Every selector simulated codons for aa's.
+# Simulated codons for aa sequences
 
 # Simply pulls random codons from the frequency table
 class SimpleRandomCodon

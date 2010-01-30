@@ -1,3 +1,4 @@
+# Fetch and print RNA statistics - including folding characteristics
 
 require 'rnafold'
 require 'bio'
@@ -5,7 +6,6 @@ require 'bio'
 class RNAStats
 
   include RNAfold
-
 
   CODONS = %w{ GCA GCC GCG GCT TGC TGT GAC GAT GAA GAG TTC TTT GGA GGC GGG GGT CAC CAT ATA ATC ATT AAA AAG CTA CTC CTG CTT TTA TTG ATG AAC AAT CCA CCC CCG CCT CAA CAG AGA AGG CGA CGC CGG CGT AGC AGT TCA TCC TCG TCT ACA ACC ACG ACT GTA GTC GTG GTT TGG TAC TAT TAA TAG TGA }
 

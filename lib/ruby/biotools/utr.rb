@@ -1,5 +1,6 @@
 # UTR handler
 #
+# Store the UTR leader and tail of an mRNA sequence
 
 class UTR
 
