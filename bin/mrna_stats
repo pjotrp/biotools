@@ -35,6 +35,9 @@ $options = OpenStruct.new()
 
 $options.warning_level = 0
 $options.seqinfo_fn = nil
+$options.templist = [ 20, 37 ]
+$options.stepsize = 10
+$options.stepnum  = 10
 
 opts = OptionParser.new do |opts|
   opts.on_tail("-h", "--help", "Print this message") {
@@ -78,10 +81,10 @@ info = FastaReader.new($options.seqinfo_fn)
 utr3 = UTR.new(info,'3')
 utr5 = UTR.new(info,'5')
 
-RNAStats.new(nil,nil,nil,$options.templist).print_title
+RNAStats.new(nil,nil,nil,$options.templist,$options.stepsize,$options.stepnum).print_title
 
 mrnas.each do | mrna |
-  stats = RNAStats.new(mrna,utr5,utr3,$options.templist)
+  stats = RNAStats.new(mrna,utr5,utr3,$options.templist,$options.stepsize,$options.stepnum)
   stats.pretty_print
 end
 

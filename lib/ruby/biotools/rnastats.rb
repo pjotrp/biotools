@@ -3,13 +3,40 @@
 require 'rnafold'
 require 'bio'
 
-class RNAStats
+# Calculate and record fold statistics
+class RNAfolds < Array
+  include RNAfold
 
+  def initialize seq, templist
+    # energy of full RNAfold
+    e = []
+    templist.each do | t |
+      e1 = calc_energy(seq,t)
+      print "\t",e1
+      e.push e1
+      rec = { :temp => t, :energy => e1 }
+      push rec
+    end
+    if e.size == 2
+      print "\t",e[1]-e[0]
+    end
+  end
+
+  def energy(temp)
+    each do | fold |
+      return fold[:energy] if fold[:temp]==temp
+    end
+  end
+end
+
+class RNAStats
   include RNAfold
 
   CODONS = %w{ GCA GCC GCG GCT TGC TGT GAC GAT GAA GAG TTC TTT GGA GGC GGG GGT CAC CAT ATA ATC ATT AAA AAG CTA CTC CTG CTT TTA TTG ATG AAC AAT CCA CCC CCG CCT CAA CAG AGA AGG CGA CGC CGG CGT AGC AGT TCA TCC TCG TCT ACA ACC ACG ACT GTA GTC GTG GTT TGG TAC TAT TAA TAG TGA }
 
-  def initialize seq=nil, utr5=nil, utr3=nil, templist=nil
+  def initialize seq=nil, utr5=nil, utr3=nil, templist=nil, stepsize=nil, stepnum=nil
+    @stepsize = stepsize
+    @stepnum  = stepnum
     if seq
       @seq = seq.seq
       @id = seq.id
@@ -27,11 +54,18 @@ class RNAStats
 
   def print_title
     print "\n#"
+    print "\tlen"
+    @templist.each do | t |
+      print "\tlen@",t,"C"
+    end
     @templist.each do | t |
       print "\tE@",t,"C"
     end
     if @templist.size == 2
       print "\tdE"
+    end
+    (1..@stepnum).each do | i |
+      print "\t#{i*@stepsize}AA@#{@templist.max}C"
     end
     print "\t%A\t%T\t%G\t%C\t%GC\tGC1\tGC2\tGC3"
     CODONS.each do | codon |
@@ -42,15 +76,20 @@ class RNAStats
 
   def pretty_print
     print @id
-    e = []
-    @templist.each do | t |
-      e1 = energy(@seq,t)
-      print "\t",e1
-      e.push e1
+    print "\t",@seq.size
+    rnafolds = RNAfolds.new(@seq, @templist)
+
+    # energy of subsections (take the max for now)
+    temperature = @templist.max
+    full_e = rnafolds.energy(temperature)
+    (1..@stepnum).each do | i |
+      seq = @seq[i*@stepsize..-1]
+      e1 = calc_energy(seq,@templist.max)
+      dE = full_e - e1
+      printf "\t%.2f",dE.abs
     end
-    if e.size == 2
-      print "\t",e[1]-e[0]
-    end
+
+    # Codon statistics
     print "\t",nucleotide_use('a')
     print "\t",nucleotide_use('t')
     print "\t",nucleotide_use('g')
