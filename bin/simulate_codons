@@ -9,8 +9,10 @@
 PROG_VERSION='simulate_codons 0.01 (January 2010)'
 
 srcpath=File.dirname(File.dirname(__FILE__))
-libpath=File.dirname(srcpath)+'/lib/ruby/biotools'
+libpath=srcpath+'/lib/ruby/biotools'
 $: << libpath
+
+# p $:
 
 require 'optparse'
 require 'ostruct'

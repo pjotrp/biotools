@@ -8,9 +8,9 @@
 PROG_VERSION='mrna_stats 0.02 (January 2010)'
 
 srcpath=File.dirname(File.dirname(__FILE__))
-libpath=File.dirname(srcpath)+'/lib/ruby/biotools'
+libpath=srcpath+'/lib/ruby/biotools'
 $: << libpath
-
+ 
 require 'optparse'
 require 'ostruct'
 
