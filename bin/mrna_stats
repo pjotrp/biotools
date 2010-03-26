@@ -58,6 +58,12 @@ EXAMPLE
   opts.on '--temp=list', Array, "List of ambient temperatures" do | list |
     $options.templist = list
   end
+  opts.on '--stepsize=size', Integer, 'Step size (default 10)' do | stepsize |
+    $options.step_size = stepsize
+  end
+  opts.on '--stepnum=num', Integer, 'Step size (default 10, zero is full length)' do | stepnum |
+    $options.step_num = stepnum
+  end
 end
 opts.parse!(ARGV)
 

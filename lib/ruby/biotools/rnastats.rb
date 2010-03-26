@@ -98,6 +98,7 @@ class RNAStats
       print "\t#{i*@stepsize}AA@#{@templist.max}C"
     end
     print "\t%A\t%T\t%G\t%C\t%GC\tGC1\tGC2\tGC3"
+    print "\tA1\tA2\tA3\tT1\tT2\tT3\tG1\tG2\tG3\tC1\tC2\tC3"
     CODONS.each do | codon |
       print "\t#{codon}"
     end
@@ -129,6 +130,7 @@ class RNAStats
     print "\t",gc(0)
     print "\t",gc(1)
     print "\t",gc(2)
+    print nuc_codon_percs
     
     usage = @bioseq.codon_usage
     # size = @bioseq.size
@@ -154,6 +156,7 @@ class RNAStats
     (@bioseq.count(nuc[0].chr).to_f/@bioseq.size*100).to_i
   end
 
+  # Calculate GC% at codon offset (1..3)
   def gc(offset)
     seq = @bioseq.seq.to_s
     nseq = ""
@@ -165,5 +168,27 @@ class RNAStats
     raise "Problem with size #{seq.size}!=#{nseq.size*3}" if seq.size != nseq.size * 3
     Bio::Sequence::NA.new(nseq).gc_percent
   end
+
+  # Calculate nuc% at codon offset (1..3)
+  def nuc_codon_percs
+    result = ''
+    seq = @bioseq.seq.to_s
+    # For each codon position calculate 
+    (0..2).each do | offset |
+      nseq = ""
+      index = 0
+      seq.each_char { | nuc|
+         nseq += nuc if index % 3 == offset
+         index += 1
+      }
+      raise "Problem with size #{seq.size}!=#{nseq.size*3}" if seq.size != nseq.size * 3
+      composition = Bio::Sequence::NA.new(nseq).composition
+      ['a','t','g','c'].each do | nuc |
+        result += "\t"+(composition[nuc]*100.0/nseq.size).to_i.to_s
+      end
+    end
+    result
+  end
+
 
 end
