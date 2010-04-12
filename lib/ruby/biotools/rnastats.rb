@@ -27,20 +27,26 @@ class RNAfolds < Array
       # p result
       # short = result.gsub(/\(\.+\)/,'').gsub(/[\(\)]/,'')
       # p [short,short.size]
-      rec = { :temp => t, :energy => e1, :fold => fold_seq(result), :size => result.size, :loops => result.count("("), :linked = linked(result), :islands = islands(result), :avg_island_size = avg_island_size(result) }
+      rec = { :temp => t, :energy => e1, :fold => fold_seq(result), :size => result.size, :linked = linked(result), :islands = islands(result), :avg_island_size = avg_island_size(result) }
       push rec
       # @maxtemp = t if @maxtemp==nil or @maxtemp<t
     end
   end
 
   # For each temperature print the fold sequence information: 
-  #   linked, islands, avg_island_size
+  #   size, linked, islands, avg_island_size
   def pretty_print
     each do | fold |
       print "\t",fold[:size]
     end
     each do | fold |
-      print "\t",fold[:loops]
+      print "\t",fold[:linked]
+    end
+    each do | fold |
+      print "\t",fold[:islands]
+    end
+    each do | fold |
+      print "\t",fold[:avg_island_size]
     end
     e = []
     each do | fold |
@@ -89,7 +95,13 @@ class RNAStats
       print "\tlen@",t,"C"
     end
     @templist.each do | t |
-      print "\tloops@",t,"C"
+      print "\tlinked@",t,"C"
+    end
+    @templist.each do | t |
+      print "\tislands@",t,"C"
+    end
+    @templist.each do | t |
+      print "\tisl_size@",t,"C"
     end
     @templist.each do | t |
       print "\tE@",t,"C"
