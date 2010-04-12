@@ -17,21 +17,25 @@ require 'bio'
 #
 class RNAfolds < Array
   include RNAfold
+  include RNAfoldStats
 
+  # Run rnafold to fetch energy and fold sequence
   def initialize seq, templist
     templist.each do | t |
       result = fold_info(seq,t)
       e1 = fold_energy(result)
       # p result
-      short = result.gsub(/\(\.+\)/,'').gsub(/[\(\)]/,'')
+      # short = result.gsub(/\(\.+\)/,'').gsub(/[\(\)]/,'')
       # p [short,short.size]
-      rec = { :temp => t, :energy => e1, :fold => fold_seq(result), :size => short.size, :loops => result.count("(") }
-      # p rec
+      rec = { :temp => t, :energy => e1, :fold => fold_seq(result), :size => result.size, :loops => result.count("("), :linked = linked(result) }
+      p rec
       push rec
       # @maxtemp = t if @maxtemp==nil or @maxtemp<t
     end
   end
 
+  # For each temperature print the fold sequence information: 
+  #   linked, islands, avg_island_size
   def pretty_print
     each do | fold |
       print "\t",fold[:size]

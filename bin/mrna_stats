@@ -55,7 +55,7 @@ EXAMPLE
   opts.on '--seq=fn', 'Sequence information (UTR in FASTA)' do | fn |
     $options.seqinfo_fn = fn
   end
-  opts.on '--temp=list', Array, "List of ambient temperatures" do | list |
+  opts.on '--temp=list', Array, "List of ambient temperatures (default 20,37)" do | list |
     $options.templist = list
   end
   opts.on '--stepsize=size', Integer, 'Step size (default 10)' do | stepsize |
