@@ -1,6 +1,7 @@
 # Fetch and print RNA statistics - including folding characteristics
 
 require 'rnafold'
+require 'rnafoldstats'
 require 'bio'
 
 # Calculate and record fold statistics. 
@@ -27,7 +28,7 @@ class RNAfolds < Array
       # p result
       # short = result.gsub(/\(\.+\)/,'').gsub(/[\(\)]/,'')
       # p [short,short.size]
-      rec = { :temp => t, :energy => e1, :fold => fold_seq(result), :size => result.size, :linked = linked(result), :islands = islands(result), :avg_island_size = avg_island_size(result) }
+      rec = { :temp => t, :energy => e1, :fold => fold_seq(result), :size => result.size, :linked => linked(result), :islands => islands(result), :avg_island_size => avg_island_size(result) }
       push rec
       # @maxtemp = t if @maxtemp==nil or @maxtemp<t
     end
