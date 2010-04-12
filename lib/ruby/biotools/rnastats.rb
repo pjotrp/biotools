@@ -27,8 +27,7 @@ class RNAfolds < Array
       # p result
       # short = result.gsub(/\(\.+\)/,'').gsub(/[\(\)]/,'')
       # p [short,short.size]
-      rec = { :temp => t, :energy => e1, :fold => fold_seq(result), :size => result.size, :loops => result.count("("), :linked = linked(result) }
-      p rec
+      rec = { :temp => t, :energy => e1, :fold => fold_seq(result), :size => result.size, :loops => result.count("("), :linked = linked(result), :islands = islands(result), :avg_island_size = avg_island_size(result) }
       push rec
       # @maxtemp = t if @maxtemp==nil or @maxtemp<t
     end
