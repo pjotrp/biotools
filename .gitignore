@@ -1,5 +1,6 @@
 *.out
 *.csv
+*.fa
 .hg
 .hgignore
 tags
