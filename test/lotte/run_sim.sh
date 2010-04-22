@@ -1,14 +1,15 @@
 #! /bin/sh
 
-# seqs="fasta/IL-15.txt fasta/TGFb1.txt"
-seqs="fasta/TGFb1.txt"
+# sets="IL-10 IL-15 IL-4 TGFb1"
+sets="IL-10"
 
-for seq in $seqs ; do 
-  echo == $seq
+for s in $sets ; do 
+  seqfn=fasta/$s.txt
+  echo == $seqfn
   for freq in freq/* ; do
     echo ++ $freq
-    ruby -I ~/izip//git/opensource/bigbio/lib -I ../../../bioruby/lib/ ../../bin/simulate_codons --freq $freq $seq &
-    echo finished $seq+$freq
+    ruby -I ~/izip//git/opensource/bigbio/lib -I ../../../bioruby/lib/ ../../bin/simulate_codons --freq $freq $seqfn 
+    echo finished $seqfn+$freq
   done
 done
 

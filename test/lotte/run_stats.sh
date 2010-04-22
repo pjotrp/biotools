@@ -1,11 +1,11 @@
 #! /bin/sh
 
-# seqs="fasta/IL-15.txt fasta/TGFb1.txt"
-seqs="TGFb1"
+# sets="IL-10 IL-15 IL-4 TGFb1"
+sets="IL-10"
 freqs="A3 C3 Equal G3 PC T3"
 
 if [ ! -z $simulate ] ; then
-  for seq in $seqs ; do 
+  for seq in $sets ; do 
     seqfn=fasta/$seq.txt
     echo "== $seq ($seqfn)"
     for freq in $freqs ; do
@@ -21,7 +21,7 @@ if [ ! -z $simulate ] ; then
 fi
 
 echo Run calculations in parallel
-for seq in $seqs ; do 
+for seq in $sets ; do 
   for freq in $freqs ; do
     fn=$seq.txt_$freq.txt_s9999_i1000.fa
     echo ++ $fn $freq
