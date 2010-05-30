@@ -64,3 +64,4 @@ TAT	 Y       100
 TAA	 *       34
 TAG	 *       33
 TGA	 *       33
+

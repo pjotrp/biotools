@@ -64,3 +64,4 @@ TAT	 Y       0
 TAA	 *       0
 TAG	 *       0
 TGA	 *       100
+

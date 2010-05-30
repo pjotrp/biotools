@@ -64,3 +64,4 @@ TAT	 Y       50
 TAA	 *       50
 TAG	 *       0
 TGA	 *       50
+
