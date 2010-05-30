@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # sets="IL-10 IL-15 IL-4 TGFb1"
-sets="IL-10"
+sets="GFP OVA"
 
 for s in $sets ; do 
   seqfn=fasta/$s.txt
