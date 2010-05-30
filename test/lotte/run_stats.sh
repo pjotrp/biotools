@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # sets="IL-10 IL-15 IL-4 TGFb1"
-sets="OVA GFP"
+sets="GFP"
 freqs="A3 C3 Equal G3 LF PC T3"
 
 if [ ! -z $simulate ] ; then
