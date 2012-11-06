@@ -1,6 +1,6 @@
 # Codon frequencies 
 #
-# This class reads an EMBOSS cut file, which contains CONDONS, 
+# This class reads an EMBOSS cut file, which contains CODONS, 
 # amino acid, the percentage within amino acid, the total 
 # frequency (I suppose) and the total number of occurrances in
 # the genome:
