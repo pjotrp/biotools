@@ -1,4 +1,11 @@
 #! /bin/sh
+#
+# Codon simulator
+#
+# Read a file that contains 4 items: the amino acid sequence, the nucleotide sequence
+# and the (untranslated) sequences at the 5' and 3' ends.
+#
+# Also pick up the simulation and calculate the folding stats.
 
 # seqs="fasta/IL-15.txt fasta/TGFb1.txt"
 seqs="fasta/TGFb1.txt"

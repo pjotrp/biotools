@@ -4,6 +4,7 @@
 sets="GFP"
 freqs="A3 C3 Equal G3 LF PC T3"
 
+# Simulate codons
 if [ ! -z $simulate ] ; then
   for seq in $sets ; do 
     seqfn=fasta/$seq.txt
@@ -20,6 +21,7 @@ if [ ! -z $simulate ] ; then
   sleep 120
 fi
 
+# Calc stats
 echo Run calculations in parallel
 for seq in $sets ; do 
   for freq in $freqs ; do
