@@ -10,6 +10,7 @@ class TabReader
 
   def initialize fn
     @f = File.open(fn)
+    @f.gets  # skip header
   end
 
   def each
