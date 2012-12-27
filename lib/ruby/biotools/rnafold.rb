@@ -3,7 +3,7 @@
 
 module RNAfold
 
-  RNAFOLD_BINARY = '/opt/ViennaRNA-1.8.4/bin/RNAfold'
+  RNAFOLD_BINARY = '/opt/ViennaRNA-2.0.7/bin/RNAfold'
 
   def fold_info seq, temp
     cmd = "echo #{seq} |"+RNAFOLD_BINARY+" -T #{temp} -noPS"

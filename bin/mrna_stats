@@ -2,10 +2,10 @@
 #
 #  Get statistics on mRNA
 #
-#  Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
+#  Copyright (C) 2010-2013 Pjotr Prins <pjotr.prins@thebird.nl> 
 #
 
-PROG_VERSION='mrna_stats 0.02 (January 2010)'
+PROG_VERSION='mrna_stats 0.02 (Jan 2010) Copyright (C) 2012 Pjotr Prins <pjotr.prins@thebird.nl>'
 
 srcpath=File.dirname(File.dirname(__FILE__))
 libpath=srcpath+'/lib/ruby/biotools'
@@ -21,8 +21,6 @@ usage = <<USAGE
     Get mRNA statistics - nucleotide content, codon use
     and RNAfold energy levels
 
-    Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
-        
   usage:
 
     Use --help for more information
