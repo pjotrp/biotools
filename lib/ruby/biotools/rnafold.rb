@@ -3,10 +3,16 @@
 
 module RNAfold
 
-  RNAFOLD_BINARY = '/opt/ViennaRNA-2.0.7/bin/RNAfold'
+  RNAFOLD_BINARY  = '/opt/ViennaRNA-2.0.7/bin/RNAfold'
 
   def fold_info seq, temp
-    cmd = "echo #{seq} |"+RNAFOLD_BINARY+" -T #{temp} --noPS"
+    binary = if File.exist?(RNAFOLD_BINARY)
+               RNAFOLD_BINARY
+             else
+               ENV['HOME'] + RNAFOLD_BINARY
+             end
+      
+    cmd = "echo #{seq} |"+binary+" -T #{temp} --noPS"
     $stderr.print cmd,"\n" if $debug
     result = `#{cmd}` 
     result
