@@ -1,0 +1,90 @@
+#! /usr/bin/ruby
+#
+#  Get statistics on mRNA 
+#
+#  Copyright (C) 2013 Pjotr Prins <pjotr.prins@thebird.nl> 
+#
+
+PROG_VERSION='mrna_stats 0.03 (Dec 2013) Copyright (C) 2013 Pjotr Prins <pjotr.prins@thebird.nl>'
+
+srcpath=File.dirname(File.dirname(__FILE__))
+libpath=srcpath+'/lib/ruby/biotools'
+$: << libpath
+ 
+require 'optparse'
+require 'ostruct'
+
+print "#{PROG_VERSION}\n"
+
+usage = <<USAGE
+
+    Get mRNA statistics - nucleotide content, codon use
+    and RNAfold energy levels
+
+  usage:
+
+    Use --help for more information
+
+USAGE
+
+print(usage) if ARGV.size == 0
+
+$options = OpenStruct.new()
+
+$options.warning_level = 0
+$options.seqinfo_fn = nil
+$options.templist = [ 20, 37 ]
+$options.stepsize = 10
+$options.stepnum  = 10
+
+opts = OptionParser.new do |opts|
+  opts.on_tail("-h", "--help", "Print this message") {
+    print(usage)
+    print(opts)
+    print <<EXAMPLE
+    
+Examples:
+
+    mrna_stats [OPTIONS] nuc.fa 
+    
+EXAMPLE
+    exit()
+  }
+  opts.on '--temp=list', Array, "List of ambient temperatures (default 20,37)" do | list |
+    $options.templist = list
+  end
+  # opts.on '--stepsize=size', Integer, 'Step size (default 10)' do | stepsize |
+  #   $options.stepsize = stepsize
+  # end
+  # opts.on '--stepnum=num', Integer, 'Step size (default 10, zero is full length)' do | stepnum |
+  #   $options.stepnum = stepnum
+  # end
+end
+opts.parse!(ARGV)
+
+require 'bigbio'
+# require 'utr'
+require 'rnastats'
+
+if ARGV.size != 1
+  p ARGV
+  raise 'Missing input file name' 
+end
+fn = ARGV[0]
+
+print "Reading #{fn}\n"
+mrnas = FastaReader.new(fn, :index=>true, :regex => '\#(\d+)')
+
+print "Reading #{$options.seqinfo_fn}\n"
+info = FastaReader.new($options.seqinfo_fn)
+
+# utr3 = UTR.new(info,'3')
+# utr5 = UTR.new(info,'5')
+
+RNAStats.new(nil,nil,nil,$options.templist,$options.stepsize,$options.stepnum).print_title
+
+mrnas.each do | mrna |
+  stats = RNAStats.new(mrna,utr5,utr3,$options.templist,$options.stepsize,$options.stepnum)
+  stats.pretty_print
+end
+
