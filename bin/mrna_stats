@@ -53,6 +53,9 @@ EXAMPLE
   opts.on '--temp=list', Array, "List of ambient temperatures (default 20,37)" do | list |
     $options.templist = list
   end
+  opts.on '--debug', "Debug info" do 
+    $debug = true
+  end
   # opts.on '--stepsize=size', Integer, 'Step size (default 10)' do | stepsize |
   #   $options.stepsize = stepsize
   # end
@@ -73,13 +76,14 @@ end
 fn = ARGV[0]
 
 print "Reading #{fn}\n"
-mrnas = FastaReader.new(fn, :index=>true, :regex => '\#(\d+)')
+mrnas = FastaReader.new(fn, :index=>true, :regex => '^(\w+)')
 
-print "Reading #{$options.seqinfo_fn}\n"
-info = FastaReader.new($options.seqinfo_fn)
+# print "Reading #{$options.seqinfo_fn}\n"
+# info = FastaReader.new($options.seqinfo_fn)
 
 # utr3 = UTR.new(info,'3')
 # utr5 = UTR.new(info,'5')
+utr3 = utr5 = nil
 
 RNAStats.new(nil,nil,nil,$options.templist,$options.stepsize,$options.stepnum).print_title
 

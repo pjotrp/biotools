@@ -181,7 +181,7 @@ class RNAStats
        nseq += nuc if index % 3 == offset
        index += 1
     }
-    raise "Problem with size #{seq.size}!=#{nseq.size*3}" if seq.size != nseq.size * 3
+    $stderr.print "WARN: Problem with size #{seq.size}!=#{nseq.size*3}\n" if seq.size != nseq.size * 3
     Bio::Sequence::NA.new(nseq).gc_percent
   end
 
@@ -197,7 +197,7 @@ class RNAStats
          nseq += nuc if index % 3 == offset
          index += 1
       }
-      raise "Problem with size #{seq.size}!=#{nseq.size*3}" if seq.size != nseq.size * 3
+      $stderr.print "WARN: Problem with size #{seq.size}!=#{nseq.size*3}\n" if seq.size != nseq.size * 3
       composition = Bio::Sequence::NA.new(nseq).composition
       ['a','t','g','c'].each do | nuc |
         result += "\t"+(composition[nuc]*100.0/nseq.size).to_i.to_s

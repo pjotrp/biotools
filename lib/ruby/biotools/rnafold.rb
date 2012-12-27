@@ -6,7 +6,8 @@ module RNAfold
   RNAFOLD_BINARY = '/opt/ViennaRNA-2.0.7/bin/RNAfold'
 
   def fold_info seq, temp
-    cmd = "echo #{seq} |"+RNAFOLD_BINARY+" -T #{temp} -noPS"
+    cmd = "echo #{seq} |"+RNAFOLD_BINARY+" -T #{temp} --noPS"
+    $stderr.print cmd,"\n" if $debug
     result = `#{cmd}` 
     result
   end
