@@ -166,6 +166,7 @@ class RNAStats
       end
     end
     print "\n"
+    $stdout.flush
   end
 
   def nucleotide_use nuc
