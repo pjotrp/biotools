@@ -19,7 +19,8 @@ print "#{PROG_VERSION}\n"
 usage = <<USAGE
 
     Get mRNA statistics - nucleotide content, codon use
-    and RNAfold energy levels
+    and RNAfold energy levels. Takes a fasta file, or a two column with
+    ID and sequence 
 
   usage:
 
@@ -65,7 +66,6 @@ EXAMPLE
 end
 opts.parse!(ARGV)
 
-require 'bigbio'
 # require 'utr'
 require 'rnastats'
 
@@ -76,7 +76,15 @@ end
 fn = ARGV[0]
 
 print "Reading #{fn}\n"
-mrnas = FastaReader.new(fn, :index=>true, :regex => '^(\w+)')
+
+is_fasta = fn =~ /\.(fa|FA)/
+if is_fasta
+  require 'bigbio'
+  mrnas = FastaReader.new(fn, :index=>true, :regex => '^(\w+)')
+else
+  require 'tabreader'
+  mrnas = TabReader.new(fn)
+end
 
 # print "Reading #{$options.seqinfo_fn}\n"
 # info = FastaReader.new($options.seqinfo_fn)
