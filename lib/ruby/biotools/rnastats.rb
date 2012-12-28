@@ -77,11 +77,14 @@ class RNAStats
     if seq
       @seq = seq.seq
       @id = seq.id
-      @base_seq = @seq
+      @base_seq = @seq.dup
       if seq and utr5 and utr3
         @seq = utr5.sequence.seq+@seq+utr3.sequence.seq
+      else
+        @seq = seq.utr5 + @seq if seq.utr5
+        @seq = @seq + seq.utr3 if seq.utr3
       end
-      @bioseq = Bio::Sequence::NA.new(@base_seq)
+      @bioseq = Bio::Sequence::NA.new(@base_seq)  # sequence without UTRs
     end
     @templist = templist
     @templist = ["37"] if templist == nil
@@ -199,9 +202,11 @@ class RNAStats
          index += 1
       }
       $stderr.print "WARN: Problem with size #{seq.size}!=#{nseq.size*3}\n" if seq.size != nseq.size * 3
-      composition = Bio::Sequence::NA.new(nseq).composition
-      ['a','t','g','c'].each do | nuc |
-        result += "\t"+(composition[nuc]*100.0/nseq.size).to_i.to_s
+      if nseq.size > 0
+        composition = Bio::Sequence::NA.new(nseq).composition
+        ['a','t','g','c'].each do | nuc |
+          result += "\t"+(composition[nuc]*100.0/nseq.size).to_i.to_s
+        end
       end
     end
     result
