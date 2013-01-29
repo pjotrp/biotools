@@ -96,10 +96,10 @@ class RNAStats
   def print_title
     print "\n#"
     print "\tlen"
-    @templist.each do | t |
-      print "\tlen@",t,"C"
-    end
     if not @no_fold
+      @templist.each do | t |
+        print "\tlen@",t,"C"
+      end
       @templist.each do | t |
         print "\tlinked@",t,"C"
       end
@@ -120,7 +120,8 @@ class RNAStats
       end
     end
     print "\t%A\t%T\t%G\t%C\t%GC\tGC1\tGC2\tGC3"
-    print "\tA1\tA2\tA3\tT1\tT2\tT3\tG1\tG2\tG3\tC1\tC2\tC3"
+    # print "\tA1\tA2\tA3\tT1\tT2\tT3\tG1\tG2\tG3\tC1\tC2\tC3"
+    print "\tA1\tT1\tG1\tC1\tA2\tT2\tG2\tC2\tA3\tT3\tG3\tC3"
     CODONS.each do | codon |
       print "\t#{codon}"
     end
@@ -211,11 +212,11 @@ class RNAStats
           count[nuc] += 1
         end
       end
-      len = count["A"] + count["G"] + count["C"] + count["T"]
-      result += "\t"+(count["A"]*100/len).to_s
-      result += "\t"+(count["T"]*100/len).to_s
-      result += "\t"+(count["G"]*100/len).to_s
-      result += "\t"+(count["C"]*100/len).to_s
+      len3 = count["A"] + count["G"] + count["C"] + count["T"]
+      result += "\t"+(count["A"]*100.0/len3).to_i.to_s
+      result += "\t"+(count["T"]*100.0/len3).to_i.to_s
+      result += "\t"+(count["G"]*100.0/len3).to_i.to_s
+      result += "\t"+(count["C"]*100.0/len3).to_i.to_s
     end
     result
 
