@@ -223,6 +223,8 @@ class RNAStats
 
 =begin
 
+    # Slightly different way of doing the same thing:
+
     # For each codon position calculate 
     (0..2).each do | offset |
       nseq = ""
