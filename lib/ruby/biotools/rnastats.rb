@@ -71,9 +71,10 @@ class RNAStats
 
   CODONS = %w{ GCA GCC GCG GCT TGC TGT GAC GAT GAA GAG TTC TTT GGA GGC GGG GGT CAC CAT ATA ATC ATT AAA AAG CTA CTC CTG CTT TTA TTG ATG AAC AAT CCA CCC CCG CCT CAA CAG AGA AGG CGA CGC CGG CGT AGC AGT TCA TCC TCG TCT ACA ACC ACG ACT GTA GTC GTG GTT TGG TAC TAT TAA TAG TGA }
 
-  def initialize seq=nil, utr5=nil, utr3=nil, templist=nil, stepsize=nil, stepnum=nil
+  def initialize seq=nil, utr5=nil, utr3=nil, templist=nil, stepsize=nil, stepnum=nil, no_fold=nil
     @stepsize = stepsize
     @stepnum  = stepnum
+    @no_fold  = no_fold
     if seq
       @seq = seq.seq
       @id = seq.id
@@ -98,23 +99,25 @@ class RNAStats
     @templist.each do | t |
       print "\tlen@",t,"C"
     end
-    @templist.each do | t |
-      print "\tlinked@",t,"C"
-    end
-    @templist.each do | t |
-      print "\tislands@",t,"C"
-    end
-    @templist.each do | t |
-      print "\tisl_size@",t,"C"
-    end
-    @templist.each do | t |
-      print "\tE@",t,"C"
-    end
-    if @templist.size == 2
-      print "\tdE"
-    end
-    (1..@stepnum).each do | i |
-      print "\t#{i*@stepsize}AA@#{@templist.max}C"
+    if not @no_fold
+      @templist.each do | t |
+        print "\tlinked@",t,"C"
+      end
+      @templist.each do | t |
+        print "\tislands@",t,"C"
+      end
+      @templist.each do | t |
+        print "\tisl_size@",t,"C"
+      end
+      @templist.each do | t |
+        print "\tE@",t,"C"
+      end
+      if @templist.size == 2
+        print "\tdE"
+      end
+      (1..@stepnum).each do | i |
+        print "\t#{i*@stepsize}AA@#{@templist.max}C"
+      end
     end
     print "\t%A\t%T\t%G\t%C\t%GC\tGC1\tGC2\tGC3"
     print "\tA1\tA2\tA3\tT1\tT2\tT3\tG1\tG2\tG3\tC1\tC2\tC3"
@@ -127,17 +130,19 @@ class RNAStats
   def pretty_print
     print @id
     print "\t",@seq.size
-    rnafolds = RNAfolds.new(@seq, @templist)
-    rnafolds.pretty_print
+    if not @no_fold
+      rnafolds = RNAfolds.new(@seq, @templist)
+      rnafolds.pretty_print
 
-    # energy of subsections (take the max for now)
-    temperature = @templist.max
-    full_e = rnafolds.energy(temperature)
-    (1..@stepnum).each do | i |
-      seq = @seq[i*@stepsize..-1]
-      e1 = calc_energy(seq,@templist.max)
-      dE = full_e - e1
-      printf "\t%.2f",dE.abs
+      # energy of subsections (take the max for now)
+      temperature = @templist.max
+      full_e = rnafolds.energy(temperature)
+      (1..@stepnum).each do | i |
+        seq = @seq[i*@stepsize..-1]
+        e1 = calc_energy(seq,@templist.max)
+        dE = full_e - e1
+        printf "\t%.2f",dE.abs
+      end
     end
 
     # Codon statistics
@@ -189,10 +194,34 @@ class RNAStats
     Bio::Sequence::NA.new(nseq).gc_percent
   end
 
-  # Calculate nuc% at codon offset (1..3)
+  # Calculate nuc% at codon offset (1..3); returns string with tab delimited fields
   def nuc_codon_percs
     result = ''
-    seq = @bioseq.seq.to_s
+    seq = @bioseq.seq.to_s.upcase
+    codons = seq.scan(/\S\S\S/)
+
+    # split into codons
+    (0..2).each do | position |
+      count = { "A" => 0, "G" => 0, "C" => 0, "T" => 0, "N" => 0, "M" => 0, "W" => 0, "K" => 0, "Y" => 0}
+      codons.each do | codon |
+        nuc = codon[position]
+        if count[nuc] == nil
+          p ["NO MATCH FOR",codon[position],codon,seq]
+        else
+          count[nuc] += 1
+        end
+      end
+      len = count["A"] + count["G"] + count["C"] + count["T"]
+      result += "\t"+(count["A"]*100/len).to_s
+      result += "\t"+(count["T"]*100/len).to_s
+      result += "\t"+(count["G"]*100/len).to_s
+      result += "\t"+(count["C"]*100/len).to_s
+    end
+    result
+
+
+=begin
+
     # For each codon position calculate 
     (0..2).each do | offset |
       nseq = ""
@@ -210,6 +239,7 @@ class RNAStats
       end
     end
     result
+=end
   end
 
 
