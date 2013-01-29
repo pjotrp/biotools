@@ -129,6 +129,7 @@ class RNAStats
   end
 
   def pretty_print
+    return if @seq == nil or @seq.size < 18
     print @id
     print "\t",@seq.size
     if not @no_fold
@@ -191,7 +192,7 @@ class RNAStats
        nseq += nuc if index % 3 == offset
        index += 1
     }
-    $stderr.print "WARN: Problem with size #{seq.size}!=#{nseq.size*3}\n" if seq.size != nseq.size * 3
+    # $stderr.print "WARN: Problem with size #{seq.size}!=#{nseq.size*3}\n" if seq.size != nseq.size * 3
     Bio::Sequence::NA.new(nseq).gc_percent
   end
 
