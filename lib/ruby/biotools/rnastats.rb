@@ -204,11 +204,12 @@ class RNAStats
 
     # split into codons
     (0..2).each do | position |
-      count = { "A" => 0, "G" => 0, "C" => 0, "T" => 0, "N" => 0, "M" => 0, "W" => 0, "K" => 0, "Y" => 0}
+      count = { "A" => 0, "G" => 0, "C" => 0, "T" => 0, "N" => 0, "M" => 0, "W" => 0, "K" => 0, "Y" => 0, "S" => 0}
       codons.each do | codon |
         nuc = codon[position]
         if count[nuc] == nil
-          p ["NO MATCH FOR",codon[position],codon,seq]
+          p ["WARNING: NO MATCH FOR",codon[position],codon,seq]
+          count[nuc] = 0
         else
           count[nuc] += 1
         end
