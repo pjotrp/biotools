@@ -28,14 +28,14 @@ class RNAfolds < Array
       # p result
       # short = result.gsub(/\(\.+\)/,'').gsub(/[\(\)]/,'')
       # p [short,short.size]
-      rec = { :temp => t, :energy => e1, :fold => fold_seq(result), :size => result.size, :linked => linked(result), :islands => islands(result), :avg_island_size => avg_island_size(result) }
+      rec = { :temp => t, :energy => e1, :fold => fold_seq(result), :size => result.size, :linked => linked(result), :stretches => stretches(result), :avg_stretch_size => avg_stretch_size(result) }
       push rec
       # @maxtemp = t if @maxtemp==nil or @maxtemp<t
     end
   end
 
   # For each temperature print the fold sequence information: 
-  #   size, linked, islands, avg_island_size
+  #   size, linked, stretches, avg_stretch_size
   def pretty_print
     each do | fold |
       print "\t",fold[:size]
@@ -44,10 +44,10 @@ class RNAfolds < Array
       print "\t",fold[:linked]
     end
     each do | fold |
-      print "\t",fold[:islands]
+      print "\t",fold[:stretches]
     end
     each do | fold |
-      print "\t",fold[:avg_island_size]
+      print "\t",fold[:avg_stretch_size]
     end
     e = []
     each do | fold |
@@ -104,7 +104,7 @@ class RNAStats
         print "\tlinked@",t,"C"
       end
       @templist.each do | t |
-        print "\tislands@",t,"C"
+        print "\tstretches@",t,"C"
       end
       @templist.each do | t |
         print "\tisl_size@",t,"C"
