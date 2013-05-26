@@ -78,7 +78,7 @@ class RNAStats
     if seq
       @seq = seq.seq
       @id = seq.id
-      @expr = seq.expr  # optional value
+      @expr = seq.expr if seq.expr # optional value
       @base_seq = @seq.dup
       if seq and utr5 and utr3
         @seq = utr5.sequence.seq+@seq+utr3.sequence.seq
@@ -134,7 +134,7 @@ class RNAStats
     return if @seq == nil or @seq.size < 18
     print @id
     print "\t",@seq.size
-    print "\t",@seq.expr if @expr
+    print "\t",@expr if @expr
     if not @no_fold
       rnafolds = RNAfolds.new(@seq, @templist)
       rnafolds.pretty_print

@@ -1,6 +1,6 @@
 
 class TabSeq
-  attr_reader :id, :seq, :utr5, :utr3
+  attr_reader :id, :expr, :seq, :utr5, :utr3
   def initialize line
     fields = line.strip.split(/\s/)
     if fields.size == 2

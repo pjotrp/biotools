@@ -96,9 +96,12 @@ end
 # utr5 = UTR.new(info,'5')
 utr3 = utr5 = nil
 
-RNAStats.new(nil,nil,nil,$options.templist,$options.stepsize,$options.stepnum,$options.no_fold).print_title
-
+first = true
 mrnas.each do | mrna |
+  if first
+    RNAStats.new(mrna,nil,nil,$options.templist,$options.stepsize,$options.stepnum,$options.no_fold).print_title
+    first = false
+  end
   stats = RNAStats.new(mrna,utr5,utr3,$options.templist,$options.stepsize,$options.stepnum,$options.no_fold)
   stats.pretty_print
 end
