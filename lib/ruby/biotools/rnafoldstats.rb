@@ -1,19 +1,17 @@
 
 module RNAfoldStats
 
-  # Calculated linked nucleotides - referred to by dots. In reality
-  # the number of links is half this number
   def linked buf
-    buf.count("(")
+    buf.count("(") + buf.count(")")
   end
 
   def unlinked buf
-    buf.count(".")
+    buf.count(".")  # not used for stats
   end
 
   # linked stretches between eyes
   def stretches buf
-    buf.split(/\.+/).size/2
+    buf.split(/\.+/).size
   end
 
   def avg_stretch_size buf
@@ -39,6 +37,9 @@ if $UNITTEST
       assert_equal(56,linked(FOLD))
       assert_equal(372,unlinked(FOLD2))
       assert_equal(246,linked(FOLD2))
+      assert_equal(246,FOLD2.count(')'))
+      assert_equal(246,FOLD2.count('('))
+      assert_equal(372,FOLD2.count('.'))
     end
    
     def test_stretches
