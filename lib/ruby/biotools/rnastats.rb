@@ -23,12 +23,12 @@ class RNAfolds < Array
   # Run rnafold to fetch energy and fold sequence
   def initialize seq, templist
     templist.each do | t |
-      result = fold_info(seq,t)
-      e1 = fold_energy(result)
+      fold_result = fold_info(seq,t)
+      e1 = fold_energy(fold_result)
       # p result
       # short = result.gsub(/\(\.+\)/,'').gsub(/[\(\)]/,'')
       # p [short,short.size]
-      rec = { :temp => t, :energy => e1, :fold => fold_seq(result), :size => result.size, :linked => linked(result), :stretches => stretches(result), :avg_stretch_size => avg_stretch_size(result) }
+      rec = { :temp => t, :energy => e1, :fold => fold_seq(fold_result), :size => fold_result.size, :linked => linked(fold_result), :stretches => stretches(fold_result), :avg_stretch_size => avg_stretch_size(fold_result) }
       push rec
       # @maxtemp = t if @maxtemp==nil or @maxtemp<t
     end
@@ -109,7 +109,7 @@ class RNAStats
         print "\tstretches@",t,"C"
       end
       @templist.each do | t |
-        print "\tisl_size@",t,"C"
+        print "\tstretch_size@",t,"C"
       end
       @templist.each do | t |
         print "\tE@",t,"C"
