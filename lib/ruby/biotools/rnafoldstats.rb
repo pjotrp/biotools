@@ -9,9 +9,14 @@ module RNAfoldStats
     buf.count(".")  # not used for stats
   end
 
-  # linked stretches between eyes
+  # linked stretches between eyes (formerly islands) is 
+  # the count switching into '(' or ')' - so count
+  # (),)(,.(,.),(.,).
+
   def stretches buf
-    buf.split(/\.+/).size
+    # buf.split(/\.+/).size
+    s = buf.gsub(/\s+/,"")
+    (s.scan(/[^(]\(/) + s.scan(/[^)]\)/)).size
   end
 
   def avg_stretch_size buf
