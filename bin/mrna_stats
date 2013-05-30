@@ -98,6 +98,7 @@ utr3 = utr5 = nil
 
 first = true
 mrnas.each do | mrna |
+  next if mrna.seq == nil # empty line in fasta file
   if first
     RNAStats.new(mrna,nil,nil,$options.templist,$options.stepsize,$options.stepnum,$options.no_fold).print_title
     first = false
