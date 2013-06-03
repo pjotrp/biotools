@@ -143,8 +143,13 @@ class RNAStats
       (1..@stepnum).each do | i |
         seq = @seq[i*@stepsize..-1]
         e1 = calc_energy(seq,@templist.max)
-        dE = full_e - e1
-        printf "\t%.2f",dE.abs
+        if e1
+          # e1,seq,@templist
+          dE = full_e - e1
+          printf "\t%.2f",dE.abs
+        else
+          print "\t-"
+        end
       end
     end
 

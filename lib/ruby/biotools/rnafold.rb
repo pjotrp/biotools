@@ -39,8 +39,12 @@ module RNAfold
   end
 
   def calc_energy seq, energy
-    result = fold_info_buf(seq, energy)
-    fold_energy(result)
+    if seq and seq.size > 30
+      result = fold_info_buf(seq, energy)
+      fold_energy(result)
+    else
+      nil
+    end
   end
 
 private
@@ -48,7 +52,7 @@ private
   def RNAfold::parse_rnafold info
     (seq,fold) = info.strip.split(/\n/)
     # p fold
-    fold =~ /(.*)\((\s?[\d\.-]+)\)$/
+    fold =~ /(.*)\(( *[\d\.-]+)\)$/
     fold_str = $1
     energy = $2
     fold_str = fold_str.strip if fold_str
